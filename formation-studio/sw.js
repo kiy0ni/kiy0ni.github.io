@@ -1,12 +1,7 @@
-// Lineup moved to /lineup/. This worker takes over from the old one, removes itself and reloads open pages,
-// which then land on the redirect page. The caches are left alone: the new site (same origin) manages them.
+// Lineup moved to /lineup/. This worker replaces the old one and removes itself, without touching open pages
+// (someone may be editing: they keep going, their work is saved on the device and in their account). The next time
+// the old address is opened it lands on the redirect page. Caches are left to the new site (same origin).
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    (async () => {
-      await self.registration.unregister();
-      const pages = await self.clients.matchAll({ type: 'window' });
-      for (const page of pages) page.navigate(page.url);
-    })(),
-  );
+  event.waitUntil(self.registration.unregister());
 });
